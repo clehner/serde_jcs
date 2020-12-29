@@ -31,6 +31,12 @@ fn test_works() {
     to_string(&from_str::<Value>(r#"{"c": 2, "a": 1, "b": []}"#).unwrap()).unwrap(),
     to_string(&from_str::<Value>(r#"{"b": [], "c": 2, "a": 1}"#).unwrap()).unwrap(),
   );
+
+  // https://w3c.github.io/json-ld-api/tests/toRdf-manifest.html#tjs13
+  test_json_import(
+    include_str!("fixtures/ex.4.input.json").trim(),
+    include_str!("fixtures/ex.4.output.json").trim(),
+  );
 }
 
 #[test]
