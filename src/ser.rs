@@ -347,7 +347,11 @@ impl Formatter for JcsFormatter {
 
     for (key, val) in entry.object {
       CompactFormatter.begin_object_key(&mut scope, first)?;
-      scope.write_all(&key)?;
+      scope.write_all(
+        String::from_utf16(&key)
+          .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?
+          .as_bytes(),
+      )?;
       CompactFormatter.end_object_key(&mut scope)?;
 
       CompactFormatter.begin_object_value(&mut scope)?;
@@ -396,8 +400,11 @@ impl Formatter for JcsFormatter {
 
     let key: Vec<u8> = replace(&mut entry.next_key, Vec::new());
     let val: Vec<u8> = replace(&mut entry.next_val, Vec::new());
+    let key_16: Vec<u16> = unsafe { String::from_utf8_unchecked(key) }
+      .encode_utf16()
+      .collect();
 
-    entry.object.insert(key, val);
+    entry.object.insert(key_16, val);
 
     Ok(())
   }
